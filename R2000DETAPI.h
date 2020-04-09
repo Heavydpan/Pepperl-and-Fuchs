@@ -31,6 +31,7 @@ public:
 
 	bool b_Init = false;//是否初始化成功
 	bool InitAPI();
+	void SetCW_CCW(bool CW_CCW);//true:CCW,false:CW
 	bool StartGroup(int i_Group);
 	bool StopGroup(int i_Group);
 	bool EndAPI();
@@ -63,9 +64,8 @@ public:
 private:
 	bool GetGroupNum();
 	int64_t GetConfigFilePos(int i_Group, int i_Zone, char *buff);
-//	int64_t ByteofZoneBuffer = sizeof(int);
-	int64_t ByteofConfigBuffer = 0;
-	int GroupNumInZoneBuffer = 0;//ZoneBuffer里面包含的分组数
+	//int64_t ByteofConfigBuffer = 0;
+	//int GroupNumInZoneBuffer = 0;//ZoneBuffer里面包含的分组数
 	bool* isInZone(char* PointBuffer);//PointBuffer R2000原始数据
 	bool isInOneZone(float tmpx, float tmpy, int x, int y);
 	void a2b(double angle, double distance);
@@ -73,7 +73,8 @@ private:
 	double y1;
 	char * buff = nullptr;//所有Config
 	char * ZoneBuffer = nullptr;//每次仅启用一个分组，所以是区域数+区域数据
-	bool *Zone_Status = nullptr;//每个区域状态
+	//bool *Zone_Status = nullptr;//每个区域状态
+	bool CW_CCW = true;
 };
 
 

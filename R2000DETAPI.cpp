@@ -27,7 +27,7 @@ bool R2000DET::InitAPI()
 	}
 	fseek(f, 0L, SEEK_END); /* 定位到文件末尾 */
 	int64_t flen = ftell(f); /* 得到文件大小 */
-	ByteofConfigBuffer = flen;
+	//ByteofConfigBuffer = flen;
 	buff = new char[flen + 1];
 	fseek(f, 0L, 0);
 	fread(buff, sizeof(char), flen, f);
@@ -118,13 +118,24 @@ int64_t R2000DET::GetConfigFilePos(int i_Group, int i_Zone, char *buff)
 bool R2000DET::StopGroup(int i_Group)
 {
 //	ByteofZoneBuffer = sizeof(int);
-	return false;
+	if (ZoneBuffer != nullptr)
+	{
+		delete[]ZoneBuffer;
+		ZoneBuffer = nullptr;
+	}
+	return true;
+}
+void R2000DET::SetCW_CCW(bool CW_CCW)
+{
+	CW_CCW = CW_CCW;
+	return;
 }
 bool* R2000DET::isInZone(char* PointBuffer)
 {
 	if (PointBuffer == nullptr)
 		return nullptr;
 	char *Buffer = ZoneBuffer;
+	bool *Zone_Status = nullptr;//每个区域状态
 //	Buffer += sizeof(int);//因为包含分组数量
 	int *qs = (int*)Buffer;
 	Zone_Status = new bool[*qs];
@@ -148,7 +159,10 @@ bool* R2000DET::isInZone(char* PointBuffer)
 		distance = (uint32_t*)(PointBuffer + i1 * 6);
 		if (*distance == -1)
 			break;
-		ang = angular_increment_real*i1 + R2000Head.first_angle / 10000;
+		if(CW_CCW)
+			ang = R2000Head.first_angle / 10000 + angular_increment_real*i1;
+		else
+			ang = R2000Head.first_angle / 10000 - angular_increment_real*i1;
 		a2b(ang, *distance / 62.5);
 		//坐标平移，以(480,480)为圆心。注意原始config坐标数据是屏幕坐标，需要转换
 		x1 += 480;
@@ -167,8 +181,7 @@ bool* R2000DET::isInZone(char* PointBuffer)
 					tmpx = xy[j].x;
 					if (isInOneZone(tmpx, tmpy, x1, y1))//相当于判断X轴
 					{
-						//	flag = true;
-						//	goto check;
+
 						if (tmpi == 0 && i1 == 0)
 							count++;
 						else
@@ -202,13 +215,6 @@ bool* R2000DET::isInZone(char* PointBuffer)
 	return Zone_Status;
 
 
-	//	return -1;
-	/*check:
-
-	if (!flag)
-	return -1;
-	return i + 1;*/
-
 }
 bool R2000DET::isInOneZone(float tmpx, float tmpy, int x, int y)
 {
@@ -236,11 +242,12 @@ bool R2000DET::isInOneZone(float tmpx, float tmpy, int x, int y)
 
 bool* R2000DET::GetStatus(char* PointBuffer)
 {
-	if (Zone_Status != nullptr)
+/*	if (Zone_Status != nullptr)
 	{
 		delete[]Zone_Status;
 		Zone_Status = nullptr;
-	}
+	}*/
+
 	bool* Status = isInZone(PointBuffer);
 
 
@@ -256,8 +263,8 @@ void R2000DET::a2b(double angle, double distance)
 bool R2000DET::EndAPI()
 {
 	b_Init = false;
-	if (Zone_Status != nullptr)
-		delete[]Zone_Status;
+//	if (Zone_Status != nullptr)
+//		delete[]Zone_Status;
 	if (ZoneBuffer != nullptr)
 		delete[]ZoneBuffer;
 	if (buff != nullptr)
