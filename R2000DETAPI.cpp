@@ -125,10 +125,12 @@ bool R2000DET::StopGroup(int i_Group)
 	}
 	return true;
 }
-void R2000DET::SetCW_CCW(bool CW_CCW)
+bool R2000DET::SetCW_CCW(bool CW_CCW)
 {
+	if (buff == nullptr)
+		return false;
 	CW_CCW = CW_CCW;
-	return;
+	return true;
 }
 bool* R2000DET::isInZone(char* PointBuffer)
 {
@@ -269,5 +271,6 @@ bool R2000DET::EndAPI()
 		delete[]ZoneBuffer;
 	if (buff != nullptr)
 		delete[]buff;
+	CW_CCW = true;
 	return true;
 }

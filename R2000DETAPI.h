@@ -31,7 +31,7 @@ public:
 
 	bool b_Init = false;//是否初始化成功
 	bool InitAPI();
-	void SetCW_CCW(bool CW_CCW);//true:CCW,false:CW
+	bool SetCW_CCW(bool CW_CCW);//true:CCW,false:CW
 	bool StartGroup(int i_Group);
 	bool StopGroup(int i_Group);
 	bool EndAPI();
