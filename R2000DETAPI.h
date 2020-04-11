@@ -70,18 +70,15 @@ private:
 	//int GroupNumInZoneBuffer = 0;//ZoneBuffer里面包含的分组数
 	bool* isInZone(char* PointBuffer);//PointBuffer R2000原始数据
 	static		bool* isInZone_ROS(const sensor_msgs::LaserScan::ConstPtr& PointBuffer);
-    static bool isInOneZone(float tmpx, float tmpy, double x, double y);
-	int iVersion = -1;//0:普通版本，1:ROS，2、3……，默认：-1，未选择
+	static bool isInOneZone(float tmpx, float tmpy, double x, double y);
+	static int iVersion;//0:普通版本，1:ROS，2、3……，默认：-1，未选择
 	void a2b(double angle, double distance);
 	static double x1;
 	static double y1;
 	char * buff = nullptr;//所有Config
-        static	char * ZoneBuffer;//每次仅启用一个分组，所以是区域数+区域数据
+	static	char * ZoneBuffer;//每次仅启用一个分组，所以是区域数+区域数据
 	static bool *Zone_Status;//每个区域状态
 	bool CW_CCW = true;
 	static void R2000StatusCallback(const sensor_msgs::LaserScan::ConstPtr& msg);
 
 };
-
-
-
