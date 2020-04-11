@@ -1,6 +1,7 @@
 #include <iostream>
 #include "stdio.h"
-
+#include "ros/ros.h"
+#include "sensor_msgs/LaserScan.h"
 #pragma once
 
 typedef struct
@@ -33,11 +34,12 @@ public:
 	bool InitAPI();
 	bool SetCW_CCW(bool CW_CCW);//true:CCW,false:CW
 	bool StartGroup(int i_Group);
+	bool StartGroup_ROS(int i_Group, char Topic[]);
 	bool StopGroup(int i_Group);
 	bool EndAPI();
 	bool *GetStatus(char* PointBuffer);//返回避障判断信息
 	int AllGroupNum = -1;//Config的所有组数
-	int ZoneofGroup = -1;//当前组的区域数
+	static int ZoneofGroup;//当前组的区域数
 	int Group = -1;//当前使用的分组编号
 	struct tmpData
 	{
@@ -67,14 +69,18 @@ private:
 	//int64_t ByteofConfigBuffer = 0;
 	//int GroupNumInZoneBuffer = 0;//ZoneBuffer里面包含的分组数
 	bool* isInZone(char* PointBuffer);//PointBuffer R2000原始数据
-	bool isInOneZone(float tmpx, float tmpy, int x, int y);
+	static		bool* isInZone_ROS(const sensor_msgs::LaserScan::ConstPtr& PointBuffer);
+    static bool isInOneZone(float tmpx, float tmpy, double x, double y);
+	int iVersion = -1;//0:普通版本，1:ROS，2、3……，默认：-1，未选择
 	void a2b(double angle, double distance);
-	double x1;
-	double y1;
+	static double x1;
+	static double y1;
 	char * buff = nullptr;//所有Config
-	char * ZoneBuffer = nullptr;//每次仅启用一个分组，所以是区域数+区域数据
-	//bool *Zone_Status = nullptr;//每个区域状态
+        static	char * ZoneBuffer;//每次仅启用一个分组，所以是区域数+区域数据
+	static bool *Zone_Status;//每个区域状态
 	bool CW_CCW = true;
+	static void R2000StatusCallback(const sensor_msgs::LaserScan::ConstPtr& msg);
+
 };
 
 
