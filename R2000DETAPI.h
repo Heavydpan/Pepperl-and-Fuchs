@@ -72,7 +72,7 @@ private:
 	//int GroupNumInZoneBuffer = 0;//ZoneBuffer里面包含的分组数
 	bool* isInZone(char* PointBuffer);//PointBuffer R2000原始数据
 	static		bool* isInZone_ROS(const sensor_msgs::LaserScan::ConstPtr& PointBuffer);
-	static bool isInOneZone(float tmpx, float tmpy, double x, char *Buffer);
+	static bool isInOneZone(float tmpx, float tmpy, double x, uint32_t start, char *Buffer);
 	static int iVersion;//0:普通版本，1:ROS，2、3……，默认：-1，未选择
 	void a2b(double angle, double distance);
 	static double x1;

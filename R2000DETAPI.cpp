@@ -243,13 +243,17 @@ bool* R2000DET::isInZone_ROS(const sensor_msgs::LaserScan::ConstPtr& PointBuffer
 //			break;
 
 		ang = PointBuffer->angle_min + angular_increment_real*i1;
-//		y1 = distance*cos(ang) / 62.5;
-//		x1 = distance*sin(ang) / 62.5;
-		y1 = -1*distance*sin(ang) / 62.5;
-		x1 = distance*cos(ang) / 62.5;
+//		y1 = -1*distance*cos(ang) / 62.5;
+//		x1 = -1*distance*sin(ang) / 62.5;
+//		y1 = -1*distance*sin(ang) / 62.5;
+//		x1 = distance*cos(ang) / 62.5;
+//以下两行2020.5.2修改
+		y1 = -1 * distance*cos(ang);
+		x1 = -1*distance*sin(ang);
 		//坐标平移，以(480,480)为圆心。注意原始config坐标数据是屏幕坐标，需要转换
-		x1 += 480;
-		y1 += 480;
+//2020.5.2修改
+//		x1 += 480;
+//		y1 += 480;
 
 		for (i = 0; i < *qs; i++)
 		{
@@ -391,7 +395,7 @@ bool* R2000DET::isInZone(char* PointBuffer)
 
 
 }
-bool R2000DET::isInOneZone(float tmpx, float tmpy, double x, char *Buffer)
+bool R2000DET::isInOneZone(float tmpx, float tmpy, double x, uint32_t start,char *Buffer)
 {
 	bool flag = false;
 	uint64_t ds;
@@ -399,7 +403,7 @@ bool R2000DET::isInOneZone(float tmpx, float tmpy, double x, char *Buffer)
 	ds = *(uint64_t*)Buffer;
 	CONFIG_XY* xy = nullptr;//new CONFIG_XY[ds[0]+1];
 	xy = (CONFIG_XY*)(Buffer + sizeof(uint64_t));// *(j + 1) + sizeof(CONFIG_XY)*ds[0] * j);
-	for (uint64_t j = 0; j < ds; j++)
+	for (uint64_t j = start; j < ds; j++)//2020.5.2 j=0改为j=start
 	{
 		if ((tmpy >= 0) && (fabs((float)tmpy - xy[j].y) <= 0.1))
 		{
