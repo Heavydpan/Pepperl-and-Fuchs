@@ -26,7 +26,7 @@ void R2000DET::R2000StatusCallback(const sensor_msgs::LaserScan::ConstPtr& msg)
 		return;
 	bool *Zone_Status = isInZone_ROS(msg);
 
-	ros::NodeHandle nh;//èŠ‚ç‚¹Handle
+	ros::NodeHandle nh;//½ÚµãHandle
 	ros::Publisher r2000detdata_pub = nh.advertise<std_msgs::Int8MultiArray>("R2000Status", 1000);
 	std_msgs::Int8MultiArray status;
 
@@ -52,11 +52,11 @@ bool R2000DET::InitAPI()
 	f = fopen(filename, "r");
 	if (f == NULL)
 	{
-		//		perror("open file error:");//åªæœ‰ä¸Šé¢çš„å‡½æ•°è®¾ç½®äº†errorå…¨å±€é”™è¯¯å·ï¼Œæ‰å¯ä½¿ç”¨ï¼Œä¼šæ ¹æ®errorè¾“å‡ºå¯¹åº”çš„é”™è¯¯ä¿¡æ¯
+		//		perror("open file error:");//Ö»ÓĞÉÏÃæµÄº¯ÊıÉèÖÃÁËerrorÈ«¾Ö´íÎóºÅ£¬²Å¿ÉÊ¹ÓÃ£¬»á¸ù¾İerrorÊä³ö¶ÔÓ¦µÄ´íÎóĞÅÏ¢
 		return false;
 	}
-	fseek(f, 0L, SEEK_END); /* å®šä½åˆ°æ–‡ä»¶æœ«å°¾ */
-	int64_t flen = ftell(f); /* å¾—åˆ°æ–‡ä»¶å¤§å° */
+	fseek(f, 0L, SEEK_END); /* ¶¨Î»µ½ÎÄ¼şÄ©Î² */
+	int64_t flen = ftell(f); /* µÃµ½ÎÄ¼ş´óĞ¡ */
 							 //ByteofConfigBuffer = flen;
 	try {
 		buff = new char[flen + 1];
@@ -88,25 +88,25 @@ bool R2000DET::StartGroup(int i_Group)
 {
 	if (iVersion == -1)
 	{
-		if (buff == nullptr)//æœªåˆå§‹åŒ–
+		if (buff == nullptr)//Î´³õÊ¼»¯
 			return false;
-		ZoneBuffer = buff + GetConfigFilePos(i_Group, 1, buff) - sizeof(int);//å«åŒºåŸŸæ•°
+		ZoneBuffer = buff + GetConfigFilePos(i_Group, 1, buff) - sizeof(int);//º¬ÇøÓòÊı
 		ZoneofGroup = *(int*)ZoneBuffer;
-		iVersion = 0;//æ™®é€šç‰ˆæœ¬æ ‡å¿—
+		iVersion = 0;//ÆÕÍ¨°æ±¾±êÖ¾
 		return true;
 	}
 	return false;
-	//å› ä¸ºæ¯æ¬¡ä»…å¯åŠ¨ä¸€ä¸ªåˆ†ç»„ï¼Œä»¥ä¸‹ä»£ç ä½œåºŸ
+	//ÒòÎªÃ¿´Î½öÆô¶¯Ò»¸ö·Ö×é£¬ÒÔÏÂ´úÂë×÷·Ï
 	/*	char *tmp = nullptr;
-	char *tmp1 = nullptr;//ç”¨äºå¤åˆ¶ZoneBuffer
-	int64_t start = GetConfigFilePos(i_Group, 1, buff) - sizeof(int);//å«åŒºåŸŸæ•°
+	char *tmp1 = nullptr;//ÓÃÓÚ¸´ÖÆZoneBuffer
+	int64_t start = GetConfigFilePos(i_Group, 1, buff) - sizeof(int);//º¬ÇøÓòÊı
 	int64_t end = 0;
 	if ((i_Group) <= AllGroupNum)
 	{
 	end = GetConfigFilePos(i_Group + 1, 1, buff) - sizeof(int);
 	}
-	int64_t size = end - start;//ç›¸å½“äºtmpçš„é•¿åº¦
-	tmp = (buff + GetConfigFilePos(i_Group, 1, buff) - sizeof(int));//å«åŒºåŸŸæ•°çš„buff
+	int64_t size = end - start;//Ïàµ±ÓÚtmpµÄ³¤¶È
+	tmp = (buff + GetConfigFilePos(i_Group, 1, buff) - sizeof(int));//º¬ÇøÓòÊıµÄbuff
 	tmp1 = new char[size + ByteofZoneBuffer];
 	memcpy(tmp1, ZoneBuffer, ByteofZoneBuffer);
 	memcpy(tmp1 + ByteofZoneBuffer, tmp, size);
@@ -124,11 +124,11 @@ bool R2000DET::StartGroup_ROS(int i_Group, char Topic[])
 {
 	if (iVersion == -1)
 	{
-		if (buff == nullptr)//æœªåˆå§‹åŒ–
+		if (buff == nullptr)//Î´³õÊ¼»¯
 			return false;
-		ZoneBuffer = buff + GetConfigFilePos(i_Group, 1, buff) - sizeof(int);//å«åŒºåŸŸæ•°
+		ZoneBuffer = buff + GetConfigFilePos(i_Group, 1, buff) - sizeof(int);//º¬ÇøÓòÊı
 		ZoneofGroup = *(int*)ZoneBuffer;
-		iVersion = 1;//æ™®é€šç‰ˆæœ¬æ ‡å¿—
+		iVersion = 1;//ÆÕÍ¨°æ±¾±êÖ¾
 		char **tmp2 = nullptr;
 		int tmp1 = 0;
 
@@ -146,30 +146,30 @@ int64_t R2000DET::GetConfigFilePos(int i_Group, int i_Zone, char *buff)
 {
 	int64_t filelen1, tmpp = 0;
 
-	int tmpq1 = 0, tmpz1 = 0;//tmpqä¸€ä¸ªç”¨äºè¯»å–å½“å‰ç»„ä¸‹åŒºåŸŸæ•°
+	int tmpq1 = 0, tmpz1 = 0;//tmpqÒ»¸öÓÃÓÚ¶ÁÈ¡µ±Ç°×éÏÂÇøÓòÊı
 
 	char * tmp1;
-	tmp1 = buff;//æŒ‡é’ˆç§»åŠ¨ï¼Œæ‰€æœ‰åŒºåŸŸå’Œç»„çš„æ•°æ®
+	tmp1 = buff;//Ö¸ÕëÒÆ¶¯£¬ËùÓĞÇøÓòºÍ×éµÄÊı¾İ
 	tmpz1 = (*(int*)tmp1);
 	tmp1 += sizeof(int);
 	tmpq1 = (*(int*)tmp1);
 	tmp1 += sizeof(int);
-	filelen1 = sizeof(int) * 2;//å®šä½
-							   //bool flag = false;//ç”¨äºåŒºåŸŸæ•°å‡1çš„æ ‡å¿—ï¼›
+	filelen1 = sizeof(int) * 2;//¶¨Î»
+							   //bool flag = false;//ÓÃÓÚÇøÓòÊı¼õ1µÄ±êÖ¾£»
 	int i = 0, j = 0;
 
 	for (i = 0; i < tmpz1; i++)
 	{
-		//æ‰¾åˆ°éœ€è¦åˆ é™¤çš„ç»„å’ŒåŒºåŸŸç¼–å·ï¼Œè¿›è¡Œå®šä½
+		//ÕÒµ½ĞèÒªÉ¾³ıµÄ×éºÍÇøÓò±àºÅ£¬½øĞĞ¶¨Î»
 		for (j = 0; j < tmpq1; j++)
 		{
-			if (i == (i_Group - 1) && j == (i_Zone - 1))//i_Zoneå‡2æ˜¯å› ä¸ºè¦åœåœ¨ç‚¹æ•°çš„å¼€å§‹
+			if (i == (i_Group - 1) && j == (i_Zone - 1))//i_Zone¼õ2ÊÇÒòÎªÒªÍ£ÔÚµãÊıµÄ¿ªÊ¼
 				break;
 			tmpp = *(int64_t*)tmp1;
 			filelen1 += tmpp * sizeof(CONFIG_XY) + sizeof(int64_t);
 			tmp1 += tmpp * sizeof(CONFIG_XY) + sizeof(int64_t);
 		}
-		if (i == (i_Group - 1) && j == (i_Zone - 1))//å‡2æ˜¯å› ä¸ºè¦åœåœ¨ç‚¹æ•°çš„å¼€å§‹
+		if (i == (i_Group - 1) && j == (i_Zone - 1))//¼õ2ÊÇÒòÎªÒªÍ£ÔÚµãÊıµÄ¿ªÊ¼
 		{
 			//					filelen1 += sizeof(int);
 			break;
@@ -225,21 +225,21 @@ bool* R2000DET::isInZone_ROS(const sensor_msgs::LaserScan::ConstPtr& PointBuffer
 
 	uint64_t ds = 0;
 	Buffer += sizeof(int);
-	int i = 0, count = 0;//countä¸ºè¿ç»­è®¡æ•°;
+	int i = 0, count = 0;//countÎªÁ¬Ğø¼ÆÊı;
 	uint64_t tmpi = 0;
 	float tmpx = -1;
 	float tmpy = -1;
 
-	double angular_increment_real = PointBuffer->angle_increment;//360 / (double)R2000Head.num_points_scan;å¼§åº¦
+	double angular_increment_real = PointBuffer->angle_increment;//360 / (double)R2000Head.num_points_scan;»¡¶È
 
-	double distance;//uint32_tï¼ŒæŒ‰ç…§åšæ™ºæ—è¦æ±‚æ”¹
+	double distance;//uint32_t£¬°´ÕÕ²©ÖÇÁÖÒªÇó¸Ä
 	double ang;
 
 	for (uint32_t i1 = 0; i1 <PointBuffer->ranges.size(); i1++)
 	{
 
-		distance =(double) PointBuffer->ranges[i1]*1000;//åšæ™ºæ—ï¼Œå•ä½ç±³ï¼Œæ¢ç®—æˆæ¯«ç±³
-//		if (distance == 0xFFFFFFFF) //æŒ‰ç…§åšæ™ºæ—è¦æ±‚åˆ é™¤
+		distance =(double) PointBuffer->ranges[i1]*1000;//²©ÖÇÁÖ£¬µ¥Î»Ã×£¬»»Ëã³ÉºÁÃ×
+//		if (distance == 0xFFFFFFFF) //°´ÕÕ²©ÖÇÁÖÒªÇóÉ¾³ı
 //			break;
 
 		ang = PointBuffer->angle_min + angular_increment_real*i1;
@@ -247,13 +247,12 @@ bool* R2000DET::isInZone_ROS(const sensor_msgs::LaserScan::ConstPtr& PointBuffer
 //		x1 = -1*distance*sin(ang) / 62.5;
 //		y1 = -1*distance*sin(ang) / 62.5;
 //		x1 = distance*cos(ang) / 62.5;
-//ä»¥ä¸‹ä¸¤è¡Œ2020.5.2ä¿®æ”¹
-		y1 = -1 * distance*cos(ang);
-		x1 = -1*distance*sin(ang);
-		//åæ ‡å¹³ç§»ï¼Œä»¥(480,480)ä¸ºåœ†å¿ƒã€‚æ³¨æ„åŸå§‹configåæ ‡æ•°æ®æ˜¯å±å¹•åæ ‡ï¼Œéœ€è¦è½¬æ¢
-//2020.5.2ä¿®æ”¹
-//		x1 += 480;
-//		y1 += 480;
+//ÒÔÏÂÁ½ĞĞ2020.5.2ĞŞ¸Ä,5.18Ôö¼Ó/5£¬¼´Ã¿¸öÏñËØµã´ú±í5mm
+		y1 = -1 * distance*cos(ang)/5;
+		x1 = -1*distance*sin(ang)/5;
+
+		x1 += 600;
+		y1 += 450;
 
 		for (i = 0; i < *qs; i++)
 		{
@@ -262,18 +261,18 @@ bool* R2000DET::isInZone_ROS(const sensor_msgs::LaserScan::ConstPtr& PointBuffer
 			xy = (CONFIG_XY*)(Buffer + sizeof(int64_t));// *(j + 1) + sizeof(CONFIG_XY)*ds[0] * j);
 			for (uint64_t j = 0; j < ds; j++)
 			{
-				if (fabs((float)y1 - xy[j].y) <= 0.1)//æ‰¾Yè½´
+				if (fabs((float)y1 - xy[j].y) <= 0.2)//ÕÒYÖá
 				{
 					tmpy = xy[j].y;
 					tmpx = xy[j].x;
-					if (isInOneZone(tmpx, tmpy, x1,j, Buffer))//ç›¸å½“äºåˆ¤æ–­Xè½´
+					if (isInOneZone(tmpx, tmpy, x1,j, Buffer))//Ïàµ±ÓÚÅĞ¶ÏXÖá
 					{
 
 						if (tmpi == 0 && i1 == 0)
 							count++;
 						else
 						{
-							if (tmpi >= 0 && (i1 - tmpi) == 1)//åˆ¤æ–­æ˜¯å¦è¿ç»­
+							if (tmpi >= 0 && (i1 - tmpi) == 1)//ÅĞ¶ÏÊÇ·ñÁ¬Ğø
 							{
 								count++;
 								tmpi = i1;
@@ -284,7 +283,7 @@ bool* R2000DET::isInZone_ROS(const sensor_msgs::LaserScan::ConstPtr& PointBuffer
 								count = 1;
 							}
 						}
-						if (count == 2)//è¿ç»­2ä¸ªç‚¹
+						if (count == 2)//Á¬Ğø2¸öµã
 						{
 							Zone_Status[i] = true;
 							count = 0;
@@ -307,8 +306,8 @@ bool* R2000DET::isInZone(char* PointBuffer)
 	if (PointBuffer == nullptr || ZoneBuffer == nullptr)
 		return nullptr;
 	char *Buffer = ZoneBuffer;
-	bool *Zone_Status = nullptr;//æ¯ä¸ªåŒºåŸŸçŠ¶æ€
-								//	Buffer += sizeof(int);//å› ä¸ºåŒ…å«åˆ†ç»„æ•°é‡
+	bool *Zone_Status = nullptr;//Ã¿¸öÇøÓò×´Ì¬
+								//	Buffer += sizeof(int);//ÒòÎª°üº¬·Ö×éÊıÁ¿
 	int *qs = (int*)Buffer;
 	try {
 		Zone_Status = new bool[*qs];
@@ -322,7 +321,7 @@ bool* R2000DET::isInZone(char* PointBuffer)
 
 	uint64_t ds = 0;
 	Buffer += sizeof(int);
-	int i = 0, count = 0;//countä¸ºè¿ç»­è®¡æ•°;
+	int i = 0, count = 0;//countÎªÁ¬Ğø¼ÆÊı;
 	uint64_t tmpi = 0;
 	float tmpx = -1;
 	float tmpy = -1;
@@ -343,9 +342,9 @@ bool* R2000DET::isInZone(char* PointBuffer)
 		else
 			ang = R2000Head.first_angle / 10000 - angular_increment_real*i1;
 		a2b(ang, distance / 62.5);
-		//åæ ‡å¹³ç§»ï¼Œä»¥(480,480)ä¸ºåœ†å¿ƒã€‚æ³¨æ„åŸå§‹configåæ ‡æ•°æ®æ˜¯å±å¹•åæ ‡ï¼Œéœ€è¦è½¬æ¢
-		x1 += 480;
-		y1 += 480;
+		//×ø±êÆ½ÒÆ£¬ÒÔ(600,450)ÎªÔ²ĞÄ¡£×¢ÒâÔ­Ê¼config×ø±êÊı¾İÊÇÆÁÄ»×ø±ê£¬ĞèÒª×ª»»
+		x1 += 600;
+		y1 += 450;
 
 		for (i = 0; i < *qs; i++)
 		{
@@ -354,18 +353,18 @@ bool* R2000DET::isInZone(char* PointBuffer)
 			xy = (CONFIG_XY*)(Buffer + sizeof(int64_t));// *(j + 1) + sizeof(CONFIG_XY)*ds[0] * j);
 			for (uint64_t j = 0; j < ds; j++)
 			{
-				if (fabs((float)y1 - xy[j].y) <= 0.1)//æ‰¾Yè½´
+				if (fabs((float)y1 - xy[j].y) <= 0.2)//ÕÒYÖá
 				{
 					tmpy = xy[j].y;
 					tmpx = xy[j].x;
-					if (isInOneZone(tmpx, tmpy, x1,j, Buffer))//ç›¸å½“äºåˆ¤æ–­Xè½´
+					if (isInOneZone(tmpx, tmpy, x1,j, Buffer))//Ïàµ±ÓÚÅĞ¶ÏXÖá
 					{
 
 						if (tmpi == 0 && i1 == 0)
 							count++;
 						else
 						{
-							if (tmpi >= 0 && (i1 - tmpi) == 1)//åˆ¤æ–­æ˜¯å¦è¿ç»­
+							if (tmpi >= 0 && (i1 - tmpi) == 1)//ÅĞ¶ÏÊÇ·ñÁ¬Ğø
 							{
 								count++;
 								tmpi = i1;
@@ -376,7 +375,7 @@ bool* R2000DET::isInZone(char* PointBuffer)
 								count = 1;
 							}
 						}
-						if (count == 2)//è¿ç»­2ä¸ªç‚¹
+						if (count == 2)//Á¬Ğø2¸öµã
 						{
 							Zone_Status[i] = true;
 							count = 0;
@@ -403,9 +402,9 @@ bool R2000DET::isInOneZone(float tmpx, float tmpy, double x, uint32_t start,char
 	ds = *(uint64_t*)Buffer;
 	CONFIG_XY* xy = nullptr;//new CONFIG_XY[ds[0]+1];
 	xy = (CONFIG_XY*)(Buffer + sizeof(uint64_t));// *(j + 1) + sizeof(CONFIG_XY)*ds[0] * j);
-	for (uint64_t j = start; j < ds; j++)//2020.5.2 j=0æ”¹ä¸ºj=start
+	for (uint64_t j = start; j < ds; j++)//2020.5.2 j=0¸ÄÎªj=start
 	{
-		if ((tmpy >= 0) && (fabs((float)tmpy - xy[j].y) <= 0.1))
+		if ((tmpy >= 0) && (fabs((float)tmpy - xy[j].y) <= 0.2))
 		{
 
 			if (x <= (tmpx >= xy[j].x ? tmpx : xy[j].x) && (x >= (tmpx <= xy[j].x ? tmpx : xy[j].x)))
