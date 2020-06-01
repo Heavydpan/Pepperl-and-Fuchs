@@ -248,8 +248,8 @@ bool* R2000DET::isInZone_ROS(const sensor_msgs::LaserScan::ConstPtr& PointBuffer
 //		y1 = -1*distance*sin(ang) / 62.5;
 //		x1 = distance*cos(ang) / 62.5;
 //以下两行2020.5.2修改,5.18增加/5，即每个像素点代表5mm
-		y1 = -1 * distance*cos(ang)/5;
-		x1 = -1*distance*sin(ang)/5;
+		y1 =distance*cos(ang)/5;
+		x1 = distance*sin(ang)/5;
 
 		x1 += 600;
 		y1 += 450;
@@ -261,10 +261,10 @@ bool* R2000DET::isInZone_ROS(const sensor_msgs::LaserScan::ConstPtr& PointBuffer
 			xy = (CONFIG_XY*)(Buffer + sizeof(int64_t));// *(j + 1) + sizeof(CONFIG_XY)*ds[0] * j);
 			for (uint64_t j = 0; j < ds; j++)
 			{
-				if (fabs((float)y1 - xy[j].y) <= 0.2)//找Y轴
+				if (fabs((float)y1 - (xy[j].y+450)) <= 0.2)//找Y轴
 				{
-					tmpy = xy[j].y;
-					tmpx = xy[j].x;
+					tmpy = xy[j].y+450;
+					tmpx = xy[j].x+600;
 					if (isInOneZone(tmpx, tmpy, x1,j, Buffer))//相当于判断X轴
 					{
 
@@ -337,11 +337,12 @@ bool* R2000DET::isInZone(char* PointBuffer)
 		distance = *(uint32_t*)(PointBuffer + i1 * 6);
 		if (distance == 0xFFFFFFFF)
 			break;
-		if (CW_CCW)
+/*		if (CW_CCW)
 			ang = R2000Head.first_angle / 10000 + angular_increment_real*i1;
 		else
-			ang = R2000Head.first_angle / 10000 - angular_increment_real*i1;
-		a2b(ang, distance / 62.5);
+			ang = R2000Head.first_angle / 10000 - angular_increment_real*i1;*/
+		R2000Head.first_angle / 10000 + angular_increment_real*i1;
+		a2b(ang, distance / 5);//62.5
 		//坐标平移，以(600,450)为圆心。注意原始config坐标数据是屏幕坐标，需要转换
 		x1 += 600;
 		y1 += 450;
@@ -353,10 +354,11 @@ bool* R2000DET::isInZone(char* PointBuffer)
 			xy = (CONFIG_XY*)(Buffer + sizeof(int64_t));// *(j + 1) + sizeof(CONFIG_XY)*ds[0] * j);
 			for (uint64_t j = 0; j < ds; j++)
 			{
-				if (fabs((float)y1 - xy[j].y) <= 0.2)//找Y轴
+				if (fabs((float)y1 - (xy[j].y+450)) <= 0.2)//找Y轴
 				{
-					tmpy = xy[j].y;
-					tmpx = xy[j].x;
+					tmpy = xy[j].y+450;
+					tmpx = xy[j].x+600;
+					printf("xx1=%lf, yy1=%lf\n", xy[j].x, xy[j], y);
 					if (isInOneZone(tmpx, tmpy, x1,j, Buffer))//相当于判断X轴
 					{
 
@@ -404,10 +406,10 @@ bool R2000DET::isInOneZone(float tmpx, float tmpy, double x, uint32_t start,char
 	xy = (CONFIG_XY*)(Buffer + sizeof(uint64_t));// *(j + 1) + sizeof(CONFIG_XY)*ds[0] * j);
 	for (uint64_t j = start; j < ds; j++)//2020.5.2 j=0改为j=start
 	{
-		if ((tmpy >= 0) && (fabs((float)tmpy - xy[j].y) <= 0.2))
+		if ((tmpy >= 0) && (fabs((float)tmpy - (xy[j].y+450)) <= 0.2))
 		{
 
-			if (x <= (tmpx >= xy[j].x ? tmpx : xy[j].x) && (x >= (tmpx <= xy[j].x ? tmpx : xy[j].x)))
+			if (x <= (tmpx >= (xy[j].x+600) ? tmpx : (xy[j].x+600)) && (x >= (tmpx <= (xy[j].x+600) ? tmpx : (xy[j].x+600))))
 			{
 				flag = true;
 				break;
