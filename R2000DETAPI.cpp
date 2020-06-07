@@ -386,7 +386,6 @@ bool* R2000DET::isInZone(char* PointBuffer)
 					}
 				}
 
-
 			}
 			Buffer += sizeof(int64_t) + ds * sizeof(CONFIG_XY);
 		}

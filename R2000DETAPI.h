@@ -82,5 +82,5 @@ private:
 	static bool *Zone_Status;//Ã¿¸öÇøÓò×´Ì¬
 	bool CW_CCW = true;
 	static void R2000StatusCallback(const sensor_msgs::LaserScan::ConstPtr& msg);
-
+ 
 };
